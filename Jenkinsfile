@@ -33,15 +33,22 @@ pipeline {
         }
 
         stage('Deploy Locally') {
-            steps {
-                bat '''
-                docker stop nodejs-container || exit 0
-                docker rm nodejs-container || exit 0
-                docker run -d --name nodejs-container -p 3000:3000 %DOCKER_IMAGE%:%BUILD_NUMBER%
-                '''
-            }
+    steps {
+        script {
+            bat '''
+            echo "Stopping and removing old container if exists..."
+            docker stop nodejs-container || exit 0
+            docker rm nodejs-container || exit 0
+
+            echo "Running new container..."
+            docker run -d --name nodejs-container -p 3000:3000 bkm83/your-nodejs-app:%BUILD_NUMBER%
+
+            echo "Currently running containers:"
+            docker ps
+            '''
         }
     }
+}
 
     post {
         always {
