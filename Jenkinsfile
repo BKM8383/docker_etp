@@ -23,7 +23,7 @@ pipeline {
 
         stage('Push') {
             steps {
-                withDockerRegistry([ credentialsId: "${DOCKER_CREDENTIALS_ID}", url: '' ]) {
+                withDockerRegistry([credentialsId: "${DOCKER_CREDENTIALS_ID}", url: '']) {
                     script {
                         dockerImage.push("${BUILD_NUMBER}")
                         dockerImage.push('latest')
@@ -33,22 +33,23 @@ pipeline {
         }
 
         stage('Deploy Locally') {
-    steps {
-        script {
-            bat '''
-            echo "Stopping and removing old container if exists..."
-            docker stop nodejs-container || exit 0
-            docker rm nodejs-container || exit 0
+            steps {
+                script {
+                    bat '''
+                    echo "Stopping and removing old container if exists..."
+                    docker stop nodejs-container || exit 0
+                    docker rm nodejs-container || exit 0
 
-            echo "Running new container..."
-            docker run -d --name nodejs-container -p 3000:3000 bkm83/your-nodejs-app:%BUILD_NUMBER%
+                    echo "Running new container..."
+                    docker run -d --name nodejs-container -p 3000:3000 bkm83/your-nodejs-app:%BUILD_NUMBER%
 
-            echo "Currently running containers:"
-            docker ps
-            '''
+                    echo "Currently running containers:"
+                    docker ps
+                    '''
+                }
+            }
         }
     }
-}
 
     post {
         always {
