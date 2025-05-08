@@ -35,7 +35,7 @@ pipeline {
         stage('Deploy Locally') {
             steps {
                 script {
-                    sh '''
+                    bat '''
                     docker stop nodejs-container || true
                     docker rm nodejs-container || true
                     docker run -d --name nodejs-container -p 3000:3000 ${DOCKER_IMAGE}:${BUILD_NUMBER}
